@@ -1,0 +1,91 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+data:
+  connected_systems_base_url: {{ .Values.connected.systems.baseUrl | quote }}
+  connected_systems_uri: {{ .Values.connected.systems.uri | quote }}
+  connected_systems_port: {{ .Values.connected.systems.port | quote }}
+  number_of_event_file_download_retries: {{ .Values.eventFileDownload.numberOfEventFileDownloadRetries | quote }}
+  sftp_connection_timeout_ms: {{ .Values.eventFileDownload.sftpConnectionTimeoutMs | quote }}
+  sftp_session_timeout_ms: {{ .Values.eventFileDownload.sftpSessionTimeoutMs | quote }}
+  spring_kafka_bootstrap_server: {{ template "eric-oss-4gpmevent-filetrans-proc.kafka-bootstrap-server" . }}
+  spring_kafka_admin_retry: {{ .Values.spring.kafka.admin.retry | quote }}
+  spring_kafka_admin_retry_backoff_ms: {{ .Values.spring.kafka.admin.retryBackoffMs | quote }}
+  spring_kafka_admin_reconnect_backoff_ms: {{ .Values.spring.kafka.admin.reconnectBackoffMs | quote }}
+  spring_kafka_admin_reconnect_backoff_max_ms: {{ .Values.spring.kafka.admin.reconnectBackoffMaxMs | quote }}
+  spring_kafka_admin_request_timeout_ms: {{ .Values.spring.kafka.admin.requestTimeoutMs | quote }}
+  spring_kafka_producer_retry_backoff_ms: {{ .Values.spring.kafka.producer.retryBackoffMs | quote }}
+  spring_kafka_producer_reconnect_backoff_ms: {{ .Values.spring.kafka.producer.reconnectBackoffMs | quote }}
+  spring_kafka_producer_reconnect_backoff_max_ms: {{ .Values.spring.kafka.producer.reconnectBackoffMaxMs | quote }}
+  spring_kafka_producer_request_timeout_ms: {{ .Values.spring.kafka.producer.requestTimeoutMs | quote }}
+  spring_kafka_consumer_auto_offset_reset: {{ .Values.spring.kafka.consumer.autoOffsetReset | quote }}
+  spring_kafka_consumer_retry_backoff_ms: {{ .Values.spring.kafka.consumer.retryBackoffMs | quote }}
+  spring_kafka_consumer_reconnect_backoff_ms: {{ .Values.spring.kafka.consumer.reconnectBackoffMs | quote }}
+  spring_kafka_consumer_reconnect_backoff_max_ms: {{ .Values.spring.kafka.consumer.reconnectBackoffMaxMs | quote }}
+  spring_kafka_consumer_request_timeout_ms: {{ .Values.spring.kafka.consumer.requestTimeoutMs | quote }}
+  spring_kafka_topics_output_name: {{ .Values.spring.kafka.topics.output.name | quote }}
+  spring_kafka_topics_output_partitions: {{ .Values.spring.kafka.topics.output.partitions | quote }}
+  spring_kafka_topics_output_acks: {{ .Values.spring.kafka.topics.output.acks | quote }}
+  spring_kafka_topics_output_replicas: {{ .Values.spring.kafka.topics.output.replicas | quote }}
+  spring_kafka_topics_output_compression_type: {{ .Values.spring.kafka.topics.output.compressionType | quote }}
+  spring_kafka_topics_output_batch_size: {{ .Values.spring.kafka.topics.output.batchSize | quote }}
+  spring_kafka_topics_output_buffer_memory: {{ .Values.spring.kafka.topics.output.bufferMemory | quote }}
+  spring_kafka_topics_output_max_request_size: {{ .Values.spring.kafka.topics.output.maxRequestSize | quote }}
+  spring_kafka_topics_output_linger: {{ .Values.spring.kafka.topics.output.linger | quote }}
+  spring_kafka_topics_output_retention_period_ms: {{ .Values.spring.kafka.topics.output.retentionPeriodMS | quote }}
+  spring_kafka_topics_output_retention_retention_bytes_topic: {{ .Values.spring.kafka.topics.output.retentionBytesTopic | quote }}
+  spring_kafka_topics_input_session_timeout_ms: {{ .Values.spring.kafka.topics.input.sessionTimeoutMs | quote }}
+  spring_kafka_topics_input_concurrency: {{ .Values.spring.kafka.topics.input.concurrency | quote }}
+  spring_kafka_topics_input_prefix: {{ .Values.spring.kafka.topics.input.prefix | quote }}
+  spring_kafka_topics_input_partition_assignment_strategy: {{ .Values.spring.kafka.topics.input.partitionAssignmentStrategy | quote }}
+  spring_kafka_topics_input_max_poll_records: {{ .Values.spring.kafka.topics.input.maxPollRecords | quote }}
+  spring_kafka_topics_input_max_poll_interval_ms: {{ .Values.spring.kafka.topics.input.maxPollIntervalMs | quote }}
+  dmm_data_catalog_base_url: {{ .Values.dmm.dataCatalog.baseUrl | quote }}
+  dmm_data_catalog_base_port: {{ .Values.dmm.dataCatalog.basePort | quote }}
+  dmm_data_catalog_data_service_uri: {{ .Values.dmm.dataCatalog.dataServiceUri | quote }}
+  dmm_data_catalog_notification_topic_uri: {{ .Values.dmm.dataCatalog.notificationTopicUri | quote }}
+  dmm_data_catalog_message_bus_uri: {{ .Values.dmm.dataCatalog.messageBusUri | quote }}
+  dmm_data_catalog_data_provider_type_uri: {{ .Values.dmm.dataCatalog.dataProviderTypeUri | quote }}
+  dmm_data_catalog_data_collector_uri: {{ .Values.dmm.dataCatalog.dataCollectorUri | quote }}
+  dmm_data_catalog_message_schema_uri_v1: {{ .Values.dmm.dataCatalog.messageSchemaUriV1 | quote }}
+  dmm_data_catalog_message_schema_uri_v2: {{ .Values.dmm.dataCatalog.messageSchemaUriV2 | quote }}
+  dmm_data_catalog_data_space_uri: {{ .Values.dmm.dataCatalog.dataSpaceUri | quote }}
+  dmm_data_catalog_message_data_topic_uri : {{ .Values.dmm.dataCatalog.messageDataTopicUri | quote }}
+  dmm_data_catalog_message_status_topic_uri : {{ .Values.dmm.dataCatalog.messageStatusTopicUri | quote }}
+  dmm_data_catalog_message_bus_name: {{ .Values.dmm.dataCatalog.messageBusName | quote }}
+  dmm_data_catalog_message_bus_namespace: {{ .Values.dmm.dataCatalog.messageBusNamespace | quote }}
+  dmm_data_catalog_data_provider_type_id: {{ .Values.dmm.dataCatalog.dataProviderTypeId | quote}}
+  dmm_data_catalog_data_provider_type_version: {{ .Values.dmm.dataCatalog.dataProviderTypeVersion | quote}}
+  dmm_data_catalog_data_collector_name: {{ .Values.dmm.dataCatalog.dataCollectorName | quote}}
+  dmm_data_catalog_data_space: {{ .Values.dmm.dataCatalog.dataSpace | quote }}
+  dmm_data_catalog_data_category: {{ .Values.dmm.dataCatalog.dataCategory | quote }}
+  use_shared_sftp_connection: {{ .Values.sftp.useSharedSftpConnection | quote }}
+  server_port: {{ .Values.service.port | quote }}
+  application.properties: |
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=*
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+    management.metrics.web.server.auto-time-requests=true
+  http_connection_timeout_in_seconds: {{.Values.httpTimeoutInSeconds | quote}}
+kind: ConfigMap
+metadata:
+  name: {{ include "eric-oss-4gpmevent-filetrans-proc.name" . }}-configmap
+  labels:
+  {{- include "eric-oss-4gpmevent-filetrans-proc.labels" . | nindent 4 }}
+  annotations:
+  {{- include "eric-oss-4gpmevent-filetrans-proc.annotations" . | nindent 4 }}

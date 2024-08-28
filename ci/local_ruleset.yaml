@@ -1,0 +1,259 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+modelVersion: 2.0
+description: "Ericsson Java Spring Boot This microservice will fetch and process 4g PM events files"
+docker-images:
+  - adp-asciidoc-builder: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-asciidocbuilder:${env.ASCII_DOC_BUILDER_TAG}
+  - adp-helm-dr-check: armdocker.rnd.ericsson.se/sandbox/adp-staging/adp-cicd/common-library-adp-helm-dr-check:latest
+  - doc-builder: armdocker.rnd.ericsson.se/sandbox/adp-staging/adp-cicd/bob-docbuilder:${env.DOC_BUILDER_TAG}
+  - adp-release-auto: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-adp-release-auto:${env.RELEASE_AUTO_TAG}
+  #- adp-release-auto: armdocker.rnd.ericsson.se/sandbox/adp-staging/adp-cicd/bob-adp-release-auto:${env.ADP_RELEASE_AUTO_TAG}
+  - py-builder: armdocker.rnd.ericsson.se/sandbox/adp-staging/adp-cicd/bob-python3builder:latest
+  - py3-kube-helm3: armdocker.rnd.ericsson.se/sandbox/adp-staging/adp-cicd/bob-py3kubehelmbuilder:2.0.3-latest
+  - java11-mvn-builder: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-java11mvnbuilder:latest
+  - elib-make-utilities: ${elib-make-subpath}-oss-drop/eric-elib/elib_makeutilities:${env.ELIB_MAKE_UTILITIES_TAG}
+  - bth-linter: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-bth/eric-bth-spectral-linter:${env.BTH_LINTER_TAG}
+  - sdk-validator: armdocker.rnd.ericsson.se/proj-eric-oss-sdkschema-drop/eric-oss-sdkschema-validator:${env.SDKSCHEMA_VALIDATOR_TAG}
+  - adp-maven-builder: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-java17mvnbuilder:${env.MVN_BUILDER_TAG}
+  - adp-helm-kubectl: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:${env.HELM_KUBECTL_TAG}
+
+import:
+  common: ../common-properties.yaml
+
+# List of constants
+properties:
+    # Microservice helm chart name
+  - helm-chart-name: eric-oss-4gpmevent-filetrans-proc
+    # Microservice docker image name
+  - docker-image-name: eric-oss-4gpmevent-filetrans-proc
+    # Path to YAML file containing all needed information about product structure to release in PRIM
+  - dpraf-config-file: 'ci_config/dpraf_config.yaml'
+    # Local folder where the dpraf output is generated based on dpraf-config-file during execution of adp-prim-release rule
+  - dpraf-output-dir: 'build/dpraf-output'
+    # Configuration file for EriDoc documents
+  - eridoc-config: "ci_config/eridoc_config.yaml"
+    # Static information for PRI
+  - pri-manual-input: "ci_config/pri_manual_input.json"
+    # Product extended name in JIRA
+  - jira-component-name: "Bob"
+    # Gerrit repository URL
+  - gerrit-url: "https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.adc/eric-oss-4gpmevent-filetrans-proc/"
+    # Image product number
+  - image-product-number: "CXC90001"
+  - image-registry: armdocker.rnd.ericsson.se
+  #- image-drop-repopath: proj-ec-son-drop
+  - image-dev-repopath: proj-ec-son-dev
+  - image-ci-repopath: proj-ec-son-ci-internal
+  #- image-full-name: ${image-registry}/${image-drop-repopath}/${image-name}
+  - image-registry-path: armdocker.rnd.ericsson.se/proj-eric-oss
+  - image-drop-repopath: ${image-registry-path}-drop
+  - image-full-name: ${image-drop-repopath}/${common.docker-image-name}
+  - image-secret: k8s-registry-secret
+  - image-ci-full-name: ${image-ci-repopath}/${common.docker-image-name}
+  #- image-secret: armdocker
+  - doc-arm-dev-repo: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-dev-generic-local/eric-oss-4gpmevent-filetrans-proc
+  - doc-arm-release-repo: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-released-generic-local/eric-oss-4gpmevent-filetrans-proc
+  # Generic repository for publishing artifacts such as documentation
+  - generic-drop-repo: ${helm-chart-repo-server-path}-drop-generic
+  # Helm Chart name must follow the pattern: eric-[a-z0-9]{1,5}-[a-z0-9-]{1,30}
+  - helm-chart-repo-server-path: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss
+  - helm-chart-dev-repopath: ${helm-chart-repo-server-path}-dev-helm-local
+  - helm-chart-ci-repopath: ${helm-chart-repo-server-path}-ci-internal-helm-local
+  - helm-chart-drop-repo: ${helm-chart-repo-server-path}-drop-helm-local
+  #- helm-chart-drop-repo: ${helm-chart-repo-server}/${helm-chart-drop-repopath}
+  - helm-chart-file-name: ${helm-chart-name}-${var.version}.tgz
+  #- helm-install-namespace: ${helm-chart-name}-install
+  - DOCKER_DIR: ./Docker
+  - project-name: eric-oss-4gpmevent-filetrans-proc
+  # MVN REPO url, etc
+  - adp-repo-name: proj-adp-gs-all
+  - adp-repo-url: https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-adp-gs-all-helm
+# Import environment variables (e.g. Jenkins parameters)
+env:
+  - ADP_RELEASE_AUTO_TAG (default=latest)
+  - ASCII_DOC_BUILDER_TAG (default=latest)
+  - DOC_BUILDER_TAG (default=1.0.0-3)
+  - MAVEN_CLI_OPTS (default=-Duser.home=${env.HOME} -B)
+  - MAVEN_OPTS (default=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn)
+  - DOCKER_VOLUME_MAPPING_PASSWD (default=--volume ${env.HOME}/mypasswd:/etc/passwd:ro)
+  - MVN_BUILDER_TAG (default=latest)
+  - RELEASE_AUTO_TAG (default=latest)
+  - PWD
+  - HOME
+  - API_TOKEN
+  - HELM_USER
+  - GERRIT_PATCHSET_REVISION (default=HEAD)
+  - GERRIT_USERNAME
+  - GERRIT_PASSWORD
+  - GERRIT_CHANGE_NUMBER
+  - JIRA_USERNAME
+  - JIRA_PASSWORD
+  - ERIDOC_USERNAME
+  - ERIDOC_PASSWORD
+  - IMAGE_REPO
+  - IMAGE_NAME
+  - IMAGE_TAG
+  - SIP_TLS (default=false)
+  - HELM3_INSTALL_TIMEOUT (default=600s)
+  - CONTRACT_TEST (default=false)
+  - HELM_RELEASE (default=${common.helm-chart-name}-release)
+  - SELI_ARTIFACTORY_REPO_PASS
+  - SELI_ARTIFACTORY_REPO_USER
+  - PROJ_MVN (default=/proj/mvn)
+  - BTH_LINTER_TAG (default=latest)
+  - HELM_KUBECTL_TAG (default=latest)
+  - DOCKER_NETWORK (default=--network host)
+  - MARKETPLACE_4GPM_TOKEN
+
+  # ADP Marketplace
+  - MARKETPLACE_TOKEN
+
+  # Kubernetes
+  - COLLECT_LOGS_SCRIPT_LOCATION (default="https://arm.sero.gic.ericsson.se/artifactory/proj-ADP_GS_Support_FTP-generic-local/collect_ADP_logs")
+  - COLLECT_LOGS_SCRIPT_FILE_NAME (default="collect_ADP_logs.sh")
+  - COLLECT_LOGS_SINCE_RELATIVE_TIME (default="2h")
+  - COLLECT_LOGS_DIR (default=./k8s-logs)
+  - ENABLE_HELM_V3 (default=true)
+  - HELM_INSTALL_TIMEOUT (default=5m0s)
+  - HELM_TEST_TIMEOUT (default=5m0s)
+  - HELM_VERSION (default="3.5.2")
+  - K8S_NAMESPACE (default=${common.docker-image-name}-${var.commithash})
+  - KUBECONFIG (default=${env.HOME}/.kube/config)
+  - BUILD_DIR (default=./build)
+  - KAAS_INFO_FILE (default=${env.BUILD_DIR}/kaas-info.log)
+  - HA_INFO_FILE (default=${env.BUILD_DIR}/ha-info.log)
+    # VHUB
+  - VHUB_API_TOKEN
+    # BTH Linter
+  - OPEN_API_SPEC_DIRECTORY (default=src/main/resources/v1)
+var:
+  - version
+  - rstate
+  - commithash
+  - image-repopath-internal
+  - image-full-name-internal
+  - image-repopath-drop
+  - bragent-image-full-name-internal
+  - helm-chart-repo-internal
+  - doc-repo-internal
+  - helm-lint-values
+  - HELM_REPO_API_TOKEN
+  - docker-config-basepath
+  - save-namespace
+  - MARKETPLACE_TOKEN
+
+# Rules to execute
+rules:
+  generate-docs:
+    - task: md-to-html
+      docker-image: adp-release-auto
+      cmd: doc-handler generate --config ${env.PWD}/doc/Marketplace_Docs/md_config.yaml --output ${env.PWD}/.bob/build/doc/html --format html --zip
+
+  marketplace-upload-dev:
+    - task: upload-doc-to-arm
+      docker-image: adp-release-auto
+      cmd: marketplace upload --arm-api-token ${env.SELI_ARTIFACTORY_REPO_PASS}
+        --arm-url ${doc-arm-dev-repo}
+        --config ${env.PWD}/doc/marketplace_upload_config.yaml
+        --dev
+        --debug
+        --refresh
+        --portal-token ${env.MARKETPLACE_4GPM_TOKEN}
+
+  marketplace-upload-release:
+    - task: upload-doc-to-arm
+      docker-image: adp-release-auto
+      cmd: marketplace upload --arm-api-token ${env.SELI_ARTIFACTORY_REPO_PASS}
+        --arm-url ${doc-arm-release-repo}
+        --config ${env.PWD}/doc/marketplace_upload_config.yaml
+        --version ${var.version}
+        --debug
+        --refresh
+        --portal-token ${env.MARKETPLACE_4GPM_TOKEN}
+
+  # Publish docker images and helm charts to drop repository
+  # Call publish only when merged to master
+  publish:
+    - task: package-helm-public
+      docker-image: adp-release-auto
+      docker-flags:
+        - "--env ENABLE_HELM_V3=true"
+      cmd: helm-package
+        --folder charts/${common.helm-chart-name}
+        --workdir .bob --output build
+        --version ${var.version}
+        --replace VERSION=${var.version}
+        --replace eric-product-info.yaml:VERSION=${var.version}
+        --replace eric-product-info.yaml:REPO_PATH=${var.image-repopath-drop}
+        --replace eric-product-info.yaml:IMAGE_NAME=${common.docker-image-name}
+    - task: image-pull-internal
+      cmd: docker pull ${var.image-full-name-internal}:${var.version}
+    - task: image-tag-public
+      cmd: docker tag ${var.image-full-name-internal}:${var.version} ${image-full-name}:${var.version}
+    - task: image-push-public
+      cmd: docker push ${image-full-name}:${var.version}
+    - task: helm-upload
+      docker-image: adp-release-auto
+      docker-flags:
+        - "--env ENABLE_HELM_V3=true"
+      cmd: upload_file.sh
+        --filename=build/${common.helm-chart-name}-${var.version}.tgz
+        --repository=${helm-chart-drop-repo}/${common.helm-chart-name}
+        --api-token=${env.SELI_ARTIFACTORY_REPO_PASS}
+    - rule: publish-oas
+    - rule: publish-jars
+
+  publish-oas:
+    - task: upload-open-api-specs
+      docker-image: adp-helm-kubectl
+      docker-flags:
+        - "--env OPEN_API_SPEC_DIRECTORY=${env.OPEN_API_SPEC_DIRECTORY}"
+      cmd:
+        bash -c 'for oas in ${env.OPEN_API_SPEC_DIRECTORY}/*openapi.yaml; do
+        if [ -f $oas ]; then
+        curl -X PUT -T $oas ${generic-drop-repo}-local/${common.helm-chart-name}/${var.version}/$(basename -- $oas) -u ${env.SELI_ARTIFACTORY_REPO_USER}:${env.SELI_ARTIFACTORY_REPO_PASS};
+        fi
+        done'
+
+# Using only md-oas as custom , because its showing md file error.
+  publish-md-oas:
+    - task: zipping-md-oas
+      docker-image: adp-release-auto
+      cmd: 'doc-handler generate --config config/marketplace_config.config
+       --output ./build/doc-md
+       --format md
+       --zip'
+    - task: upload-md-oas
+      docker-image: adp-release-auto
+      cmd: "marketplace upload --arm-api-token=${env.SELI_ARTIFACTORY_REPO_PASS}
+       --arm-url=${generic-drop-repo}-local/${common.helm-chart-name}/${var.version}
+       --config=config/marketplace_upload_config.config
+       --version=${var.version}"
+
+  publish-jars:
+    - task: mvn-upload
+      docker-image: adp-maven-builder
+      docker-flags:
+        - ${env.DOCKER_VOLUME_MAPPING_PASSWD}
+        - "--volume ${env.HOME}:${env.HOME}"
+        - "--volume ${env.PROJ_MVN}:/proj/mvn"
+        - "--env SELI_ARTIFACTORY_REPO_USER=${env.SELI_ARTIFACTORY_REPO_USER}"
+        - "--env SELI_ARTIFACTORY_REPO_PASS=${env.SELI_ARTIFACTORY_REPO_PASS}"
+        - "--env MAVEN_OPTS"
+      cmd:
+        - git stash && git checkout master
+        - mvn ${env.MAVEN_CLI_OPTS} -Darguments=" -Dmaven.javadoc.skip=true -DskipTests=true" clean deploy

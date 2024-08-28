@@ -1,0 +1,169 @@
+[
+  {
+    "id": 3,
+    "messageDataTopic": {
+      "id": 3,
+      "name": "file-notification-service--4g-event--enm2",
+      "encoding": "JSON",
+      "messageSchemaIds": [
+        3
+      ],
+      "messageBus": {
+        "id": 2,
+        "name": "messagebus1",
+        "clusterName": "hall142",
+        "nameSpace": "efintho",
+        "accessEndpoints": [
+          "https://eric-oss-dmm-data-message-bus-kf:9092"
+        ],
+        "notificationTopicIds": [],
+        "messageStatusTopicIds": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "messageDataTopicIds": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "dataProviderType": {
+        "id": 3,
+        "dataSpace": {
+          "id": 3,
+          "name": "4G",
+          "dataProviderTypeIds": [
+            3,
+            4
+          ]
+        },
+        "dataCategoryType": {
+          "id": 2,
+          "dataCategoryName": "PM_EVENTS"
+        },
+        "notificationTopicIds": [],
+        "messageDataTopicIds": [
+          3
+        ],
+        "providerVersion": "v2",
+        "providerTypeId": "enm2"
+      },
+      "messageStatusTopic": {
+        "id": 3,
+        "name": "file-notification-service--4g-event--enm2",
+        "specificationReference": "",
+        "encoding": "JSON",
+        "messageDataTopicIds": [
+          3
+        ],
+        "messageBus": {
+          "id": 2,
+          "name": "messagebus1",
+          "clusterName": "hall142",
+          "nameSpace": "efintho",
+          "accessEndpoints": [
+            "https://eric-oss-dmm-data-message-bus-kf:9092"
+          ],
+          "notificationTopicIds": [],
+          "messageStatusTopicIds": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "messageDataTopicIds": [
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      }
+    },
+    "dataService": {
+      "id": 1,
+      "dataServiceInstance": [
+        {
+          "id": 1,
+          "dataService": {
+            "id": 1,
+            "dataServiceName": "eric-oss-enm-fns"
+          },
+          "dataServiceInstanceName": "eric-oss-enm-fns----PM_COUNTERS--enm2",
+          "controlEndPoint": "",
+          "consumedDataSpace": "",
+          "consumedDataCategory": "",
+          "consumedDataProvider": "",
+          "consumedSchemaVersion": "",
+          "consumedSchemaName": ""
+        },
+        {
+          "id": 3,
+          "dataService": {
+            "id": 1,
+            "dataServiceName": "eric-oss-enm-fns"
+          },
+          "dataServiceInstanceName": "eric-oss-enm-fns--4G--PM_EVENTS--enm2",
+          "controlEndPoint": "",
+          "consumedDataSpace": "",
+          "consumedDataCategory": "",
+          "consumedDataProvider": "",
+          "consumedSchemaVersion": "",
+          "consumedSchemaName": ""
+        },
+        {
+          "id": 2,
+          "dataService": {
+            "id": 1,
+            "dataServiceName": "eric-oss-enm-fns"
+          },
+          "dataServiceInstanceName": "eric-oss-enm-fns--4G--PM_EVENTS--enm2",
+          "controlEndPoint": "",
+          "consumedDataSpace": "",
+          "consumedDataCategory": "",
+          "consumedDataProvider": "",
+          "consumedSchemaVersion": "",
+          "consumedSchemaName": ""
+        }
+      ],
+      "predicateParameter": [
+        {
+          "id": 2,
+          "parameterName": "nodeType",
+          "isPassedToConsumedService": false,
+          "dataService": {
+            "id": 1,
+            "dataServiceName": "eric-oss-enm-fns"
+          }
+        },
+        {
+          "id": 1,
+          "parameterName": "dataType",
+          "isPassedToConsumedService": false,
+          "dataService": {
+            "id": 1,
+            "dataServiceName": "eric-oss-enm-fns"
+          }
+        }
+      ],
+      "dataServiceName": "eric-oss-enm-fns"
+    },
+    "dataType": {
+      "id": 3,
+      "mediumType": "stream",
+      "mediumId": 3,
+      "schemaName": "FLS",
+      "schemaVersion": "1",
+      "isExternal": false,
+      "consumedDataSpace": "",
+      "consumedDataCategory": "",
+      "consumedDataProvider": "",
+      "consumedSchemaName": "",
+      "consumedSchemaVersion": ""
+    },
+    "specificationReference": "eric-oss-enm-fns--4G--PM_EVENTS--enm2"
+  }
+]

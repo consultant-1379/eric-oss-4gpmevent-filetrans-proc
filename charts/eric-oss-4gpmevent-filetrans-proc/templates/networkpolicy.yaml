@@ -1,0 +1,42 @@
+{{- if .Values.global -}}
+  {{- if and .Values.global.networkPolicy .Values.networkPolicy -}}
+    {{- if and .Values.global.networkPolicy.enabled .Values.networkPolicy.enabled -}}
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "eric-oss-4gpmevent-filetrans-proc.name" . }}-limit-internal-traffic
+  labels:
+  {{- include "eric-oss-4gpmevent-filetrans-proc.labels" . | nindent 4 }}
+  annotations:
+  {{- include "eric-oss-4gpmevent-filetrans-proc.prometheus" . | nindent 4 }}
+  {{- include "eric-oss-4gpmevent-filetrans-proc.annotations" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "eric-oss-4gpmevent-filetrans-proc.name" . }}
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    {{- include "eric-oss-4gpmevent-filetrans-proc.netpol-ingress-pod-selector-rules" . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+{{- end }}

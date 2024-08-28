@@ -1,0 +1,79 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "eric-oss-4gpmevent-filetrans-proc.fullname" . }}-pre-delete-job
+  labels:
+    {{- include "eric-oss-4gpmevent-filetrans-proc.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+    {{- include "eric-oss-4gpmevent-filetrans-proc.annotations" . | nindent 4 }}
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      annotations:
+        {{- include "eric-oss-4gpmevent-filetrans-proc.annotations" . | nindent 8 }}
+      labels:
+        {{- include "eric-oss-4gpmevent-filetrans-proc.labels" . | nindent 8 }}
+        {{- include "eric-oss-4gpmevent-filetrans-proc.service-mesh-inject" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "eric-oss-4gpmevent-filetrans-proc.fullname" . }}
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: {{ include "eric-oss-4gpmevent-filetrans-proc.pullSecret" . | quote}}
+      containers:
+        - name: eric-oss-4gpmevent-pre-delete
+          image: {{ template "eric-oss-4gpmevent-filetrans-proc.mainImagePath" . }}
+          imagePullPolicy: {{ template "eric-oss-4gpmevent-filetrans-proc.registryImagePullPolicy" . }}
+          env:
+            - name: FOURGPMEVENT_SERVICE_NAME
+              value: {{ include "eric-oss-4gpmevent-filetrans-proc.fullname" . }}
+            - name: FOURGPMEVENT_SERVICE_PORT
+              value: {{ .Values.service.port | quote }}
+          command: ["/bin/sh","-c"]
+          args:
+          - |
+            echo "deregister_response=$(echo $(curl -X DELETE http://eric-oss-4gpmevent-filetrans-proc:8080/data-service-instance | jq .))  &&
+                  deregister_status=$(echo $deregister_response | jq .deregisterStatus) &&
+                  exit $(echo $deregister_response | jq .deregisterStatus) "
+
+            {{- include "eric-oss-4gpmevent-filetrans-proc.service-mesh-sidecar-quit" .| nindent 12 }}
+
+          resources:
+            requests:
+              cpu: {{ (index .Values "resources" "eric-oss-4gpmevent-filetrans-proc" "requests" "cpu" | quote) }}
+              memory: {{ (index .Values "resources" "eric-oss-4gpmevent-filetrans-proc" "requests" "memory" | quote) }}
+              ephemeral-storage: {{ (index .Values "resources" "eric-oss-4gpmevent-filetrans-proc" "requests" "ephemeral-storage" | quote) }}
+            limits:
+              cpu: {{ (index .Values "resources" "eric-oss-4gpmevent-filetrans-proc" "limits" "cpu" | quote) }}
+              memory: {{ (index .Values "resources" "eric-oss-4gpmevent-filetrans-proc" "limits" "memory" | quote) }}
+              ephemeral-storage: {{ (index .Values "resources" "eric-oss-4gpmevent-filetrans-proc" "limits" "ephemeral-storage" | quote) }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+      priorityClassName: {{ (index .Values "podPriority" "eric-oss-4gpmevent-filetrans-proc" "priorityClassName") }}
+      nodeSelector: {{- include "eric-oss-4gpmevent-filetrans-proc.nodeSelector" . | nindent 6 -}}
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- include "eric-oss-4gpmevent-filetrans-proc.tolerations" . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "default": {},
+  "title": "Root Schema",
+  "required": [
+    "replicaCount",
+    "autoScaling",
+    "nodeSelector",
+    "tolerations",
+    "affinity",
+    "topologySpreadConstraints"
+  ],
+  "properties": {
+    "replicaCount": {
+      "type": "integer",
+      "default": 0,
+      "title": "The replicaCount Schema",
+      "examples": [
+        1
+      ]
+    },
+    "autoScaling": {
+      "type": "object",
+      "default": {},
+      "title": "The autoScaling Schema",
+      "required": [
+        "enabled",
+        "minReplicas",
+        "maxReplicas",
+        "targetCPUUtilizationPercentage"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "title": "The enabled Schema",
+          "examples": [
+            false
+          ]
+        },
+        "minReplicas": {
+          "type": "integer",
+          "default": 0,
+          "title": "The minReplicas Schema",
+          "examples": [
+            1
+          ]
+        },
+        "maxReplicas": {
+          "type": "integer",
+          "default": 0,
+          "title": "The maxReplicas Schema",
+          "examples": [
+            100
+          ]
+        },
+        "targetCPUUtilizationPercentage": {
+          "type": "integer",
+          "default": 0,
+          "title": "The targetCPUUtilizationPercentage Schema",
+          "examples": [
+            80
+          ]
+        }
+      },
+      "examples": [{
+        "enabled": false,
+        "minReplicas": 1,
+        "maxReplicas": 100,
+        "targetCPUUtilizationPercentage": 80
+      }]
+    },
+    "nodeSelector": {
+      "type": "object",
+      "default": {},
+      "title": "The nodeSelector Schema",
+      "required": [],
+      "properties": {},
+      "examples": [{}]
+    },
+    "tolerations": {
+      "type": "array",
+      "default": [],
+      "title": "The tolerations Schema",
+      "items": {},
+      "examples": [
+        []
+      ]
+    },
+    "affinity": {
+      "type": "object",
+      "default": {},
+      "title": "The affinity Schema",
+      "required": [
+        "podAntiAffinity",
+        "topologyKey"
+      ],
+      "properties": {
+        "podAntiAffinity": {
+          "type": "string",
+          "default": "",
+          "title": "The podAntiAffinity Schema",
+          "examples": [
+            "soft"
+          ]
+        },
+        "topologyKey": {
+          "type": "string",
+          "default": "",
+          "title": "The topologyKey Schema",
+          "examples": [
+            "kubernetes.io/hostname"
+          ]
+        }
+      },
+      "examples": [{
+        "podAntiAffinity": "soft",
+        "topologyKey": "kubernetes.io/hostname"
+      }]
+    },
+    "topologySpreadConstraints": {
+      "type": "array",
+      "default": [],
+      "title": "The topologySpreadConstraints Schema",
+      "items": {},
+      "examples": [
+        []
+      ]
+    }
+  },
+  "examples": [{
+    "replicaCount": 1,
+    "autoScaling": {
+      "enabled": false,
+      "minReplicas": 1,
+      "maxReplicas": 100,
+      "targetCPUUtilizationPercentage": 80
+    },
+    "nodeSelector": {},
+    "tolerations": [],
+    "affinity": {
+      "podAntiAffinity": "soft",
+      "topologyKey": "kubernetes.io/hostname"
+    },
+    "topologySpreadConstraints": []
+  }]
+}

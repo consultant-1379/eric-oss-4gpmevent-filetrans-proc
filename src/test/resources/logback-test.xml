@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ ~ COPYRIGHT Ericsson 2023
+ ~
+ ~
+ ~
+ ~ The copyright to the computer program(s) herein is the property of
+ ~
+ ~ Ericsson Inc. The programs may be used and/or copied only with written
+ ~
+ ~ permission from Ericsson Inc. or in accordance with the terms and
+ ~
+ ~ conditions stipulated in the agreement/contract under which the
+ ~
+ ~ program(s) have been supplied.
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] [%level] %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--    These are Spring-Kafka-Test's embedded kafka classes. Kafka/Zookeeper server related.
+    There are client specific loggers that could be fine-tuned to reduce noise but might be necessary for debugging-->
+    <logger name="org.apache.zookeeper" level="ERROR"/>
+    <logger name="kafka.coordinator" level="ERROR"/>
+    <logger name="kafka.server" level="ERROR"/>
+    <logger name="kafka.controller" level="ERROR"/>
+    <logger name="kafka.log" level="ERROR"/>
+    <logger name="kafka.zookeeper" level="ERROR"/>
+    <logger name="kafka.zk" level="ERROR"/>
+    <logger name="state.change" level="ERROR"/>
+    <logger name="kafka.cluster" level="ERROR"/>
+    <logger name="kafka.network" level="ERROR"/>
+    <logger name="kafka.common" level="ERROR"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

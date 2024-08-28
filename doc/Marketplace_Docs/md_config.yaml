@@ -1,0 +1,27 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+documents:
+  #document name
+  - name: "User Guide"
+    files:
+      - user/user_guide.md
+      - user/4gpmevent_Architechture_Diagram.png
+      - user/4gpmevent_Interface_Overview.png
+      - user/4gpmevent_Dependency_Check.png
+  - name: "Developer Guide"
+    files:
+      - developer/developer_guide.md
+      - developer/4gpmevent_Interface_Overview.png

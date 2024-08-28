@@ -1,0 +1,185 @@
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+server.port: ${SERVER_PORT:33631}
+
+#Metrics related configurations
+management.endpoint.metrics.enabled: "true"
+management.endpoints.web.exposure.include: "*"
+management.info.env.enabled: "true"
+management.endpoint.prometheus.enabled: "true"
+management.prometheus.metrics.export.enabled: "true"
+management.metrics.web.server.auto-time-requests: "true"
+
+#opentracing.jaeger.enabled: "true"
+temp-directory: "/tmp/"
+
+endpoints.health.sensitive: "false"
+info.app.name: '@name@'
+info.app.description: Microservice chassis app
+info.app.version: '@version@'
+info.app.legal: "COPYRIGHT Ericsson 2021 -
+ The copyright to the computer program(s) herein is the property of
+ Ericsson Inc. The programs may be used and/or copied only with written
+ permission from Ericsson Inc. or in accordance with the terms and
+ conditions stipulated in the agreement/contract under which the
+ program(s) have been supplied."
+
+#See more details about pattern layout: https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
+#See more details about logging.pattern.level : https://docs.spring.io/spring-boot/docs/2.5.2/reference/html/features.html#features.logging.custom-log-configuration
+#logging.pattern.level: "%5p [%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}][%X{userName}]"
+
+#Set the stubrunner credentials:
+#stubrunner.username: <LAN SIGNUM ID>
+#stubrunner.password: <LAN encripted PWD or JFrog API Key>
+stubrunner.username: ${SELI_ARTIFACTORY_REPO_USER}
+stubrunner.password: ${SELI_ARTIFACTORY_REPO_PASS}
+
+#TODO: Update input topic name to agreed name
+
+eventFileDownload:
+  numberOfEventFileDownloadRetries: ${NUMBER_OF_EVENT_FILE_DOWNLOAD_RETRIES:3} # default value of 3 when no env vars found
+  sftpConnectionTimeoutMs: ${SFTP_CONNECTION_TIMOUT_MS:15000} # default value of 15000ms when no env vars found
+  sftpSessionTimeoutMs: ${SFTP_SESSION_TIMOUT_MS:15000} # default value of 15000ms when no env vars found
+
+spring:
+  kafka:
+    bootstrap-server: ${SPRING_KAFKA_BOOTSTRAP_SERVER:eric-oss-dmm-kf-op-sz-kafka-bootstrap:9093,eric-oss-dmm-kf-op-sz-kafka-bootstrap:9092}
+    admin:
+      retry: ${SPRING_KAFKA_ADMIN_RETRY:2147483647} # default value of Integer.MAX_VALUE when no env vars found
+      retry.backoff.ms: ${SPRING_KAFKA_ADMIN_RETRY_BACKOFF_MS:100} # default value of 100ms when no env vars found
+      reconnect.backoff.ms: ${SPRING_KAFKA_ADMIN_RECONNECT_BACKOFF_MS:50} # default value of 50ms when no env vars found
+      reconnect.backoff.max.ms: ${SPRING_KAFKA_ADMIN_RECONNECT_BACKOFF_MAX_MS:30000} # default value of 30000ms when no env vars found. Custom value, default Kafka 1000
+      request.timeout.ms: ${SPRING_KAFKA_ADMIN_REQUEST_TIMEOUT_MS:30000} # default value of 30000ms when no env vars found
+    producer:
+      retry.backoff.ms: ${SPRING_KAFKA_PRODUCER_RETRY_BACKOFF_MS:100} # default value of 100ms when no env vars found
+      reconnect.backoff.ms: ${SPRING_KAFKA_PRODUCER_RECONNECT_BACKOFF_MS:50} # default value of 50ms when no env vars found
+      reconnect.backoff.max.ms: ${SPRING_KAFKA_PRODUCER_RECONNECT_BACKOFF_MAX_MS:30000} # default value of 30000ms when no env vars found. Custom value, default Kafka 1000
+      request.timeout.ms: ${SPRING_KAFKA_PRODUCER_REQUEST_TIMEOUT_MS:30000} # default value of 30000ms when no env vars found
+    consumer:
+      group-id: eric-oss-4gpmevent-filetrans-proc-consumer-group-id
+      auto.offset.reset: ${SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET:earliest} # default value of earliest when no env vars found
+      retry.backoff.ms: ${SPRING_KAFKA_CONSUMER_RETRY_BACKOFF_MS:100} # default value of 100ms when no env vars found
+      reconnect.backoff.ms: ${SPRING_KAFKA_CONSUMER_RECONNECT_BACKOFF_MS:50} # default value of 50ms when no env vars found
+      reconnect.backoff.max.ms: ${SPRING_KAFKA_CONSUMER_RECONNECT_BACKOFF_MAX_MS:30000} # default value of 30000ms when no env vars found. Custom value, default Kafka 1000
+      request.timeout.ms: ${SPRING_KAFKA_CONSUMER_REQUEST_TIMEOUT_MS:30000} # default value of 30000ms when no env vars found
+    topics:
+      input:
+        name: ${SPRING_KAFKA_TOPICS_INPUT_NAME:file-notification-service--4g-event--*} # default value of file-notification-service--4g-event--enm2 when no env vars found
+        prefix: ${SPRING_KAFKA_TOPICS_INPUT_PREFIX:file-notification-service--4g-event--} # default value of file-notification-service--4g-event-- when no env vars found
+        partition.assignment.strategy: ${SPRING_KAFKA_TOPICS_INPUT_PARTITION_ASSIGNMENT_STRATEGY:org.apache.kafka.clients.consumer.CooperativeStickyAssignor}
+        session.timeout.ms: ${SPRING_KAFKA_TOPICS_INPUT_SESSION_TIMEOUT_MS:30000} # default value of 30s when no env vars found
+        concurrency: ${SPRING_KAFKA_TOPICS_INPUT_CONCURRENCY:4} # default value of 4 when no env vars found
+        max.poll.records: ${SPRING_KAFKA_TOPICS_INPUT_MAX_POLL_RECORDS:5} # default value of 5 when no env vars found
+        max.poll.interval.ms: ${SPRING_KAFKA_TOPICS_INPUT_MAX_POLL_INTERVAL_MS:600000} # default value of 60s when no env vars found
+      output:
+        name: ${SPRING_KAFKA_TOPICS_OUTPUT_NAME:4g-pm-event-file-transfer-and-processing} # default value of 4g-pm-event-file-transfer-and-processing-- when no env vars found
+        partitions: ${SPRING_KAFKA_TOPICS_OUTPUT_PARTITIONS:36} # default value of 36 when no env vars found
+        replicas: ${SPRING_KAFKA_TOPICS_OUTPUT_REPLICAS:3} # default value of 3 when no env vars found
+        compression-type: ${SPRING_KAFKA_TOPICS_OUTPUT_COMPRESSION_TYPE:lz4} # default value of "lz4" when no env vars found
+        batch-size: ${SPRING_KAFKA_TOPICS_OUTPUT_BATCH_SIZE:1000000} # default value of 1MB when no env vars found
+        buffer-memory: ${SPRING_KAFKA_TOPICS_OUTPUT_BUFFER_MEMORY:1000000} # default value of 1MB when no env vars found
+        max-request-size: ${SPRING_KAFKA_TOPICS_OUTPUT_MAX_REQUEST_SIZE:50000000} # default value of 50MB when no env vars found
+        linger: ${SPRING_KAFKA_TOPICS_OUTPUT_LINGER:15} # default value of 15ms when no env vars found
+        acks: ${SPRING_KAFKA_TOPICS_OUTPUT_ACKS:all}  # default value of all when no env vars found
+        retentionPeriodMS: ${SPRING_KAFKA_TOPICS_OUTPUT_RETENTION_PERIOD_MS:1200000} # default value of 2Minutes when no env vars found
+        retentionBytesTopic: ${SPRING_KAFKA_TOPICS_OUTPUT_RETENTION_BYTES_TOPIC:120795955200} # defaults to 120GB when no env vars found
+    availability:
+      retry-interval: 10000 # value in ms
+      retry-attempts: 2147483647 # Equivalent to Integer.MAX_VALUE
+  sleuth:
+    messaging:
+      enabled: false
+  jmx:
+    enabled: true
+  profiles:
+    active: prod
+connected:
+  systems:
+    base-url: ${CONNECTED_SYSTEMS_BASE_URL:http://eric-eo-subsystem-management}
+    uri: ${CONNECTED_SYSTEMS_URI:/subsystem-manager/v1/subsystems/}
+    port: ${CONNECTED_SYSTEMS_PORT:80}
+    availability:
+      retry-interval: 10000 # value in ms
+      retry-attempts: 2147483647 # Equivalent to Integer.MAX_VALUE
+      circuit-breaker-retry-attempts: 2
+      circuit-breaker-reset-timeout: 60000 # value in ms
+      circuit-breaker-open-timeout: 61000 # value in ms
+      circuit-breaker-backoff: 60000 # value in ms
+
+dmm:
+  data-catalog:
+    base-url: ${DMM_DATA_CATALOG_BASE_URL:http://eric-oss-data-catalog:}
+    base-port: ${DMM_DATA_CATALOG_BASE_PORT:9590}
+    dataServiceName: ${SERVICE_ID:eric-oss-4gpmevent-filetrans-proc}
+    data-service-uri: ${DMM_DATA_CATALOG_DATA_SERVICE_URI:/catalog/v1/data-service}
+    notification-topic-uri: ${DMM_DATA_CATALOG_NOTIFICATION_TOPIC_URI:/catalog/v1/notification-topic}
+    message-bus-uri: ${DMM_DATA_CATALOG_MESSAGE_BUS_URI:/catalog/v1/message-bus}
+    data-provider-type-uri: ${DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_URI:/catalog/v1/data-provider-type}
+    data-collector-uri: ${DMM_DATA_CATALOG_DATA_COLLECTOR_URI:/catalog/v1/data-collector}
+    message-schema-uri-v1: ${DMM_DATA_CATALOG_MESSAGE_SCHEMA_URI_V1:/catalog/v1/message-schema}
+    message-schema-uri-v2: ${DMM_DATA_CATALOG_MESSAGE_SCHEMA_URI_V2:/catalog/v2/message-schema}
+    message-data-topic-uri: ${DMM_DATA_CATALOG_MESSAGE_DATA_TOPIC_URI:/catalog/v1/message-data-topic}
+    data-space-uri: ${DMM_DATA_CATALOG_DATA_SPACE_URI:/catalog/v1/data-space}
+    message-status-topic-uri: ${DMM_DATA_CATALOG_MESSAGE_STATUS_URI:/catalog/v1/message-status-topic}
+    message-bus-name: ${DMM_DATA_CATALOG_MESSAGE_BUS_NAME:mb2}
+    message-bus-namespace: ${DMM_DATA_CATALOG_MESSAGE_BUS_NAMESPACE:nameSpace}
+    dataProviderType: ${DMM_DATA_CATALOG_DATA_PROVIDER_TYPE:enm}
+    dataProviderTypeVersion: ${DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_VERSION:v1}
+    dataProviderTypeId: ${DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_ID:V1}
+    dataCollectorName: ${DMM_DATA_CATALOG_DATA_COLLECTOR_NAME:enm}
+    data-space: ${DMM_DATA_CATALOG_DATA_SPACE:4G}
+    data-category: ${DMM_DATA_CATALOG_DATA_CATEGORY:PM_EVENTS}
+    bulk-data-repository-uri: ${DMM_DATA_CATALOG_BULK_DATA_REPOSITORY_URI:/catalog/v1/bulk-data-repository/}
+    availability:
+      retry-interval: 10000 # value in ms
+      retry-attempts: 2147483647 # Equivalent to Integer.MAX_VALUE
+      circuit-breaker-retry-attempts: 9
+      circuit-breaker-reset-timeout: 60000 # value in ms
+      circuit-breaker-open-timeout: 61000 # value in ms
+      circuit-breaker-backoff: 60000 # value in ms
+  schemaRegistry:
+    url: ${DMM_SCHEMA_REGISTRY_URL:http://eric-schema-registry-sr:8081}
+
+scriptingVM:
+  availability:
+    retry-interval: 10000 # value in ms
+    retry-attempts: 2147483647 # Equivalent to Integer.MAX_VALUE
+    circuit-breaker-retry-attempts: 2
+    circuit-breaker-reset-timeout: 60000 # value in ms
+    circuit-breaker-open-timeout: 61000 # value in ms
+    circuit-breaker-backoff: 60000 # value in ms
+
+http:
+  connectionTimeoutInSeconds: ${HTTP_CONNECTION_TIMEOUT_IN_SECONDS:60}
+
+ericsson:
+  logging:
+    runtime-level-control:
+      enabled: ${RUN_TIME_LEVEL_CONTROL:false}
+
+speccification:
+  reference: PM_EVENTS
+
+kafka:
+  header-event:
+    version: 2
+
+sftp:
+  use:
+    shared:
+      sftp-connection: ${USE_SHARED_SFTP_CONNECTION:false}
+droppedPIEventList: 56,26,27,12,48,16,53,6,36,8,1040,1067,1025,1038,1043,1092,1042,1054,1049,1051

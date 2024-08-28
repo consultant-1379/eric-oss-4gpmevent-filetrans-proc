@@ -1,0 +1,308 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+# Default values for eric-oss-4gpmevent-filetrans-proc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+#TODO: Enable the tls security when solution is implemented
+#global:
+#  timezone: UTC
+#  registry:
+#    url: armdocker.rnd.ericsson.se
+#    imagePullPolicy: IfNotPresent
+#  #Secret must be manually created in the namespace, no default value
+#  pullSecret: eric-adp-example-secret
+#  fsGroup:
+#    manual: 10000
+#    namespace: true
+#   The IP family the service belongs to when service.type is set to ClusterIP.
+#   Options are: IPv4, IPv6
+#  internalIPFamily:
+# security:
+#    policyBinding:
+#      create: true
+#    policyReferenceMap:
+#      default-restricted-security-policy: "<restricted security policy at customer deployment>"
+#   tls:
+#     enabled: false
+
+networkPolicy:
+  enabled: true
+  podSelector:
+    # removing either "ingress" or "egress" will
+    # result in the respective rule set being "allow all"
+    - label: app.kubernetes.io/name
+      ingress:
+        - value: eric-pm-server
+          port: 33631
+          protocol: TCP
+        - port: 15090
+          protocol: TCP
+        - port: 8080
+          protocol: TCP
+
+#TODO: Enable the tls security when solution is implemented
+security:
+  tls:
+    enabled: true
+
+replicaCount: 2
+
+podDisruptionBudget:
+  # Minimum number/percentage of Pods that must remain available during the planned disruption.
+  # Value can be expressed as an integer or as a percentage. When specified as a percentage of the Pods,
+  # if it does not map to an exact number, Kubernetes rounds up to the nearest integer.
+  # minAvailable: 2 # example value for 2 pods defined as integer
+  minAvailable: "40%"
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+#Empty labels list for application deployment engineer to add more labels (In Compliance with DR-D1121-068).
+labels: {}
+
+imageCredentials:
+  repoPath:
+  eric-oss-4gpmevent-filetrans-proc:
+    repoPath: # see default in eric-product-info.yaml
+    registry: {}
+      # overrides global registry url
+      # url:
+      #- Secret must be manually created in the namespace, no default value
+    # pullSecret: REPO_SECRET
+#  eric-oss-4gpmevent-filetrans-procTest:
+#    repoPath: # see default in eric-product-info.yaml
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+annotations: {}
+
+service:
+  type: ClusterIP
+  port: 8080    # Changed from 80 to 8080 and spring application is hosted on 8080
+  endpoints:
+    chassisapi:
+      tls:
+        enforced: required
+        verifyClientCertificate: required
+
+ingress:
+  enabled: false
+  ingressClass: OAM-IngressClass
+  hosts:
+    - host: chart-example.local
+      paths: [/]
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+eric-pm-server:
+  rbac:
+    appMonitoring:
+      enabled: true
+
+prometheus:
+  path: /actuator/prometheus
+  scrape: true
+  interval: 15s
+
+resources:
+  eric-oss-4gpmevent-filetrans-proc:
+    requests:
+      memory: 2Gi
+      cpu: 1500m
+      ephemeral-storage: 4G
+    limits:
+      memory: 2.5Gi
+      cpu: 3000m
+      ephemeral-storage: 15G
+    jvm:
+      initialMemoryAllocationPercentage: 50
+      smallMemoryAllocationMaxPercentage: 60
+      largeMemoryAllocationMaxPercentage: 60
+
+autoScaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity: "soft"
+  topologyKey: "kubernetes.io/hostname"
+
+zookeeper:
+  enabled: true
+  fullnameOverride: eric-data-coordinator-zk
+  clientPort: 2181
+
+kafka:
+  enabled: true
+  fullnameOverride: eric-data-message-bus-kf
+  nameOverride: eric-data-message-bus-kf
+  kafkaPort: 9092
+  dataCoordinator:
+    clientServiceName: eric-data-coordinator-zk
+  persistence:
+    persistentVolumeClaim:
+      storageClassName: ""
+
+probes:
+  eric-oss-4gpmevent-filetrans-proc:
+    livenessProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 90
+      periodSeconds: 10
+      timeoutSeconds: 10
+    readinessProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 90
+      periodSeconds: 10
+      timeoutSeconds: 10
+
+podPriority:
+  eric-oss-4gpmevent-filetrans-proc:
+    priorityClassName: ""
+
+terminationGracePeriodSeconds: 30
+
+topologySpreadConstraints: []
+
+connected:
+  systems:
+    baseUrl: "http://eric-eo-subsystem-management"
+    uri: "/subsystem-manager/v1/subsystems/"
+    port: 80
+
+dmm:
+  dataCatalog:
+    baseUrl: "http://eric-oss-data-catalog:"
+    basePort: "9590"
+    dataServiceUri: "/catalog/v1/data-service"
+    notificationTopicUri: "/catalog/v1/notification-topic"
+    dataCategory: "PM_EVENTS"
+    messageBusUri: "/catalog/v1/message-bus"
+    dataProviderTypeUri: "/catalog/v1/data-provider-type"
+    dataSpaceUri: "/catalog/v1/data-space"
+    dataCollectorUri: "/catalog/v1/data-collector"
+    messageSchemaUriV1: "/catalog/v1/message-schema"
+    messageSchemaUriV2: "/catalog/v2/message-schema"
+    messageDataTopicUri: "/catalog/v1/message-data-topic"
+    messageStatusTopicUri: "/catalog/v1/message-status-topic"
+    messageBusName: "mb2"
+    messageBusNamespace: "nameSpace"
+    dataProviderTypeId: "V2"
+    dataProviderTypeVersion: "v5"
+    dataSpace: "4G"
+    dataCollectorName: "enm"
+
+appArmorProfile:
+  type: ""
+  localhostProfile:
+
+seccompProfile:
+  type: ""
+  localhostProfile:
+
+eventFileDownload:
+  numberOfEventFileDownloadRetries: 3
+  sftpConnectionTimeoutMs: 15000
+  sftpSessionTimeoutMs: 15000
+
+spring:
+  kafka:
+    bootstrapServer: eric-oss-dmm-kf-op-sz-kafka-bootstrap:9092
+    bootstrapServersTls: eric-oss-dmm-kf-op-sz-kafka-bootstrap:9093
+    clusterName: eric-oss-dmm-kf-op-sz
+    admin:
+      retry: "2147483647" # must be quoted due to helm bug
+      retryBackoffMs: 100
+      reconnectBackoffMs: 50
+      reconnectBackoffMaxMs: 30000 # custom value, default Kafka 1000
+      requestTimeoutMs: 30000
+    producer:
+      retryBackoffMs: 100
+      reconnectBackoffMs: 50
+      reconnectBackoffMaxMs: 30000 # custom value, default Kafka 1000
+      requestTimeoutMs: 30000
+    consumer:
+      autoOffsetReset: "earliest"
+      retryBackoffMs: 100
+      reconnectBackoffMs: 50
+      reconnectBackoffMaxMs: 30000 # custom value, default Kafka 1000
+      requestTimeoutMs: 30000
+    topics:
+      input:
+        prefix: "file-notification-service--4g-event--"
+        partitionAssignmentStrategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
+        sessionTimeoutMs: 60000
+        replicas: 3
+        concurrency: 6
+        maxPollRecords: 20
+        maxPollIntervalMs: 600000
+      output:
+        name: "4g-pm-event-file-transfer-and-processing"
+        acks: all
+        compressionType: "lz4"
+        partitions: 36
+        replicas: 2
+        batchSize: "500000" #500KB
+        bufferMemory: "32000000" #32MB
+        maxRequestSize: "50000000" #50MB
+        linger: 100 #100ms
+        retentionPeriodMS: "1200000" # 20 Minutes | If this is changed it will only take effect if the topic did not already exist
+        retentionBytesTopic: "120795955200" # 120GB storage total per topic
+
+httpTimeoutInSeconds: 60
+
+messaging:
+  kafka:
+    issuerReference: eric-oss-dmm-kf-op-sz-clients-ca-cert
+
+# role binding (DR D1123-134)
+securityPolicy:
+  rolename: "eric-oss-4gpmevent-filetrans-proc"
+
+# A set of local supplementalGroups values for use when fsGroup is not supported (DR-D1123-135)
+podSecurityContext:
+  supplementalGroups: null #{value='0...max'}{default=null}
+
+bandwidth:
+  maxEgressRate: 300M
+sftp:
+  useSharedSftpConnection: true

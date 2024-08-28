@@ -1,0 +1,58 @@
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: eric-oss-4gpmevent-filetrans-proc
+  title: 4G PM Event File Transfer and Processing
+  description: The 4G PM Event File Transfer and Processing service collects 4G event files from ENM based on notifications consumed from Kafka, produced by the File Notification Service (FNS). The service parses the 4G event files it receives and breaks up the contents of each event into records. The records are written onto a Kafka output topic to be consumed by other services.
+  annotations:
+    backstage.io/source-location: url:https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.adc/eric-oss-4gpmevent-filetrans-proc
+    gerrit/component: OSS/com.ericsson.oss.adc/eric-oss-4gpmevent-filetrans-proc
+    sonarqube.org/project-key: com.ericsson.oss.adc:eric-oss-4gpmevent-filetrans-proc
+    jenkins:
+      fem6s11-eiffel216.eiffel.gic.ericsson.se:8443/eric-oss-4gpmevent-filetrans-proc_PreCodeReview_Hybrid,
+      fem6s11-eiffel216.eiffel.gic.ericsson.se:8443/eric-oss-4gpmevent-filetrans-proc_Publish_Hybrid
+    spinnaker.io/application-name: adc-e2e-cicd
+    spinnaker.io/pipelines: eric-oss-4gpmevent-filetrans-proc-E2E-Flow
+  links:
+    - url: https://mimer.internal.ericsson.com/productPage?activeView=productDetails&productNumber=APR201932
+      title: Mimer
+      icon: dashboard
+    - url: https://confluence-oss.seli.wh.rnd.internal.ericsson.com/display/IDUN/Team+Aster
+      title: Team Aster Confluence
+      icon: dashboard
+    - url: https://adp.ericsson.se/marketplace/4g-pm-event-file-transfer-and-processing
+      title: ADP
+      icon: dashboard
+  tags:
+    - ericsson-intelligent-controller
+  roles:
+    microservice-architect: zcaashh
+    scrum-master: zkollak
+    product-owner: zmohsus
+    line-manager: eeikonl
+    security-master: zganchi
+    ci-spoc: zkharos
+  approval:
+    date: 22-02-2024
+    approver: zcaashh
+spec:
+  type: microservice
+  lifecycle: production
+  owner: aster-mandl
+  system: eric-oss-adc
